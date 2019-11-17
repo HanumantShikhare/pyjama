@@ -2,6 +2,7 @@ package org.h_shikhare.pyjama.string;
 
 import org.apache.commons.lang3.StringUtils;
 import org.h_shikhare.pyjama.exception.PendingImplException;
+import org.h_shikhare.pyjama.exception.ValueException;
 
 public class PyString {
 
@@ -144,25 +145,91 @@ public class PyString {
     }
 
     public static String expandTabs(String str, int tabSize) {
+        // will have to handle \r character
         if (StringUtils.isBlank(str) || !str.contains("\t")) {
             return str;
+        } else if (tabSize == 0) {
+            return str.replaceAll("\t", "");
         }
-        String[] split = str.split("\t");
+
+        String[] newLineSplit = str.split("\n");
+        StringBuilder result = new StringBuilder(str.length() + 16); // pessimistic size
 
         char[] spaces = new char[tabSize];
         for (int i = 0; i < tabSize; i++) {
             spaces[i] = ' ';
         }
         String spaceString = String.valueOf(spaces);
-        StringBuilder result = new StringBuilder(str.length()); // pessimistic size
 
-        for (String s : split) {
-            result.append(s).append(spaceString.substring(s.length() % tabSize));
+        for (String s : newLineSplit) {
+            String[] split = s.split("\t");
+            for (int i = 0; i < split.length - 1; i++) {
+                result.append(split[i]).append(spaceString.substring(split[i].length() % tabSize));
+            }
+            result.append(split[split.length - 1]).append("\n");
         }
-        return result.toString();
+        return result.substring(0, result.length() - 1);
     }
 
-    public static void main(String[] args) {
-        System.out.println(PyString.expandTabs("\t123456adasdad7\tb\tb"));
+    public static int find(String str, String sub) {
+        if (str == null && sub == null || StringUtils.isBlank(str) || sub == null) {
+            return -1;
+        }
+        return find(str, sub, 0, str.length());
+    }
+
+    public static int find(String str, String sub, int start) {
+        if (str == null && sub == null || StringUtils.isBlank(str) || sub == null || str.length() <= start) {
+            return -1;
+        }
+        return find(str, sub, start, str.length());
+    }
+
+    public static int find(String str, String sub, int start, int end) {
+        if (str == null && sub == null || StringUtils.isBlank(str) || sub == null || str.length() <= start || start >= end) {
+            return -1;
+        }
+        return str.substring(start, end).indexOf(sub);
+    }
+
+    public static String format(String str, String... arg) throws PendingImplException {
+        throw new PendingImplException();
+    }
+
+    public static String formatMap(String str, String... arg) throws PendingImplException {
+        throw new PendingImplException();
+    }
+
+    public static int index(String str, String sub) throws ValueException {
+        if (str == null && sub == null || StringUtils.isBlank(str) || sub == null) {
+            throw new ValueException();
+        }
+        int index = index(str, sub, 0, str.length());
+        if (index == -1) {
+            throw new ValueException();
+        }
+        return index;
+    }
+
+    public static int index(String str, String sub, int start) throws ValueException {
+        if (str == null && sub == null || StringUtils.isBlank(str) || sub == null || str.length() <= start) {
+            throw new ValueException();
+        }
+        int index = index(str, sub, start, str.length());
+        if (index == -1) {
+            throw new ValueException();
+        }
+        return index;
+    }
+
+    public static int index(String str, String sub, int start, int end) throws ValueException {
+        if (str == null && sub == null || StringUtils.isBlank(str) || sub == null || str.length() <= start || start >= end) {
+            throw new ValueException();
+        }
+        int index = str.substring(start, end).indexOf(sub);
+        if (index == -1) {
+            throw new ValueException();
+        }
+        return index;
     }
 }
