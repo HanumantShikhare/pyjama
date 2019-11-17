@@ -1,2 +1,4 @@
 # pyjama
-Python built-in functions in Java
+Python - Java Mapping
+
+The idea is simple implement Python built-in functions in Java.
